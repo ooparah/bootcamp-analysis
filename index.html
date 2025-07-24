@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engine Upskilling Bootcamp Success Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        h1, h2, h3 {
+            color: #1e293b;
+            font-weight: 700;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px; /* Fixed height for charts */
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .text-area {
+            background-color: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        .metric-card {
+            background-color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #e2e8f0;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        tbody tr:nth-child(odd) {
+            background-color: #f8fafc;
+        }
+        tbody tr:hover {
+            background-color: #eef2f6;
+        }
+        .llm-output-area {
+            min-height: 100px;
+            background-color: #ecfdf5; /* Light green for LLM output */
+            border: 1px solid #a7f3d0;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            white-space: pre-wrap; /* Preserve whitespace and line breaks */
+            word-wrap: break-word; /* Break long words */
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="container">
+        <h1 class="text-3xl mb-6 text-center">Engine Upskilling Bootcamp Success Analysis</h1>
+
+        <p class="mb-8 text-center text-gray-600">
+            This report provides a qualitative and quantitative breakdown of the Engine Upskilling Bootcamp's success,
+            based on participant feedback. We've analyzed changes in familiarity with Unity engine development
+            and satisfaction across various aspects of the course.
+        </p>
+
+        <!-- Overall Familiarity & Knowledge Gain -->
+        <h2 class="text-2xl mb-4">1. Overall Familiarity with Unity Engine Development</h2>
+        <p class="mb-4 text-gray-700">
+            Participants rated their familiarity with Unity engine development on a scale of 1 to 4,
+            both prior to and after course completion.
+            (1: Zero experience, 2: I know the basics, 3: I could comfortably resolve a bug in a specific domain,
+            4: I could comfortably mentor and guide a new Unity developer on Unity engine development and contribution)
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="metric-card rounded-xl shadow-md">
+                <div class="metric-value" id="avg-familiarity-prior"></div>
+                <div class="metric-label">Avg. Familiarity (Prior)</div>
+            </div>
+            <div class="metric-card rounded-xl shadow-md">
+                <div class="metric-value" id="avg-familiarity-after"></div>
+                <div class="metric-label">Avg. Familiarity (After)</div>
+            </div>
+            <div class="metric-card rounded-xl shadow-md">
+                <div class="metric-value" id="avg-knowledge-gain"></div>
+                <div class="metric-label">Avg. Knowledge Gain</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="familiarityChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="knowledgeGainDistributionChart"></canvas>
+        </div>
+
+        <!-- Quantitative Feedback (Satisfaction Metrics) -->
+        <h2 class="text-2xl mb-4">2. Overall Quantitative Feedback: Satisfaction & Relevance</h2>
+        <p class="mb-4 text-gray-700">
+            Participants rated various aspects of the bootcamp on a scale of 1 to 5, where higher numbers indicate greater satisfaction.
+        </p>
+        <div class="chart-container">
+            <canvas id="satisfactionChart"></canvas>
+        </div>
+
+        <!-- Breakdown by Team/Region -->
+        <h2 class="text-2xl mb-4">3. Breakdown by USP Team/Region</h2>
+        <p class="mb-4 text-gray-700">
+            Here's a detailed breakdown of familiarity and satisfaction metrics, segmented by the participant's USP team or region.
+        </p>
+
+        <div class="overflow-x-auto mb-8">
+            <table class="min-w-full">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-4">Team/Region</th>
+                        <th class="py-3 px-4">Participants</th>
+                        <th class="py-3 px-4">Avg. Familiarity (Prior)</th>
+                        <th class="py-3 px-4">Avg. Familiarity (After)</th>
+                        <th class="py-3 px-4">Avg. Knowledge Gain</th>
+                        <th class="py-3 px-4">Avg. Structure Aided Learning</th>
+                        <th class="py-3 px-4">Avg. Capstone Difficulty (Lower is Better)</th>
+                        <th class="py-3 px-4">Avg. Courseware Week 1 Sat.</th>
+                        <th class="py-3 px-4">Avg. Courseware Week 2 Sat.</th>
+                    </tr>
+                </thead>
+                <tbody id="team-breakdown-table">
+                    <!-- Data will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="text-xl mb-2">Knowledge Gain by Team/Region</h3>
+        <div class="chart-container">
+            <canvas id="knowledgeGainByTeamChart"></canvas>
+        </div>
+
+        <h3 class="text-xl mb-2">Satisfaction by Team/Region</h3>
+        <div class="chart-container">
+            <canvas id="satisfactionByTeamChart"></canvas>
+        </div>
+
+        <!-- Qualitative Feedback -->
+        <h2 class="text-2xl mb-4">4. Qualitative Feedback: Key Insights</h2>
+        <p class="mb-4 text-gray-700">
+            Here's a summary of the open-ended feedback provided by participants, highlighting valuable aspects and areas for improvement.
+        </p>
+
+        <h3 class="text-xl mb-2">Most Valuable Aspects:</h3>
+        <div class="text-area rounded-xl shadow-inner mb-6" id="valuable-aspects-summary">
+            <ul class="list-disc list-inside text-gray-800">
+                <li>Hands-on bug fixing and practical application of knowledge.</li>
+                <li>Understanding the Unity engine's internal structure and build process (Bee system).</li>
+                <li>Guidance on submitting Pull Requests (PRs) and navigating the contribution process.</li>
+                <li>Learning to use Rider for debugging C# and C++ code.</li>
+                <li>The opportunity to contribute to the engine.</li>
+                <li>Support from the engine team and cohort discussions.</li>
+            </ul>
+        </div>
+
+        <h3 class="text-xl mb-2">Areas for Improvement:</h3>
+        <div class="text-area rounded-xl shadow-inner mb-6" id="improvements-summary">
+            <ul class="list-disc list-inside text-gray-800">
+                <li><strong>Earlier Bug Selection:</strong> Multiple participants suggested selecting a bug for the Capstone Project earlier (Day 1 or 2) to allow for more integrated learning and actual work.</li>
+                <li><strong>Course Structure & Pacing:</strong> Some felt the initial content (Bee, TestInfrastructure) was too slow or overwhelming and could be moved to an optional/advanced section. A more hands-on, "get in and figure it out" approach was suggested.</li>
+                <li><strong>Documentation Gaps:</strong> Missing or unclear internal documentation made setup and development harder.</li>
+                <li><strong>Bug Availability:</strong> Difficulty in finding suitable, unfixed Jira bugs for the Capstone Project.</li>
+                <li><strong>PR Process Clarity:</strong> The PR section was noted as the weakest part, with a need for clearer explanations and supporting documentation, especially regarding specific test commands.</li>
+                <li><strong>Content Flow:</strong> Material was sometimes scattered, lacking a clear, structured flow, with too many links diverting from the main objective.</li>
+                <li><strong>Platform Onboarding Videos:</strong> Lacked context and were tiring to watch.</li>
+                <li><strong>Team Support:</strong> While generally positive, slow response times from feature owners were noted.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const data = [
+                // Manually parsed data from the CSV. In a real application, this would be dynamically loaded.
+                // For simplicity and self-containment within the immersive, it's hardcoded here.
+                {
+                    "Email Address": "hans.chua@unity3d.com",
+                    "Familiarity_Prior_Text": "I know the basics. Cloning repo, building from source, and enabling platforms.",
+                    "Familiarity_Prior_Value": 2, // Mapped from text description
+                    "Familiarity_After_Text": "I could comfortably resolve a bug in a specific domain",
+                    "Familiarity_After_Value": 3, // Mapped from text description
+                    "Team": "GxPA",
+                    "Structure_Aided_Learning": 4,
+                    "Capstone_Difficulty": 1,
+                    "Daily_Content_Week1": true,
+                    "Courseware_Week1_Satisfaction": 3,
+                    "Daily_Content_Week2": true,
+                    "Courseware_Week2_Satisfaction": 3,
+                    "Any_Comments_Suggestions_Feedback": "My feedback has been collected in the form of an annotated document"
+                },
+                {
+                    "Email Address": "wei.ren.chen@unity3d.com",
+                    "Familiarity_Prior_Text": "I know the basics. Cloning repo, building from source, and enabling platforms.",
+                    "Familiarity_Prior_Value": 2,
+                    "Familiarity_After_Text": "I could comfortably resolve a bug in a specific domain",
+                    "Familiarity_After_Value": 3,
+                    "Team": "Singapore/GxPA",
+                    "Structure_Aided_Learning": 3,
+                    "Capstone_Difficulty": 2,
+                    "Daily_Content_Week1": true,
+                    "Courseware_Week1_Satisfaction": 3,
+                    "Daily_Content_Week2": true,
+                    "Courseware_Week2_Satisfaction": 3,
+                    "Any_Comments_Suggestions_Feedback": "Day 1 vs Day 2 Swap the Day 1 material with Day 2. Since Bee comes with the source, it makes more sense to pull the source first before working with Bee. Bee I'm not entirely sure what the purpose of building a \"Hello World\" executable with Bee. It would be more useful to demonstrate actual usage of the build script. Example, how to modify it for custom builds. Finding a Bug It took some time to go through the UUM Jira backlog to find bugs I felt confident tackling. Without domain knowledge, some of the bugs I spent time investigating turned out to be quite tricky. I ended to fixing the third bug I looked into, but only after investing significant time to understand the feature involved. Fixing a Bug I reached out to the owner of the feature. He was very friendly, but response times were slow. He didn’t reply to my messages regarding how to implement unit testing for the bug so I have to skip the unit testing part. Submitting a PR I received solid support from the 2D engine team based in my country. One of them helped me resolve all the technical issues in my pull request."
+                },
+                {
+                    "Email Address": "cal.chiu@unity3d.com",
+                    "Familiarity_Prior_Text": "I know the basics. Cloning repo, building from source, and enabling platforms.",
+                    "Familiarity_Prior_Value": 2,
+                    "Familiarity_After_Text": "I could comfortably resolve a bug in a specific domain",
+                    "Familiarity_After_Value": 3,
+                    "Team": "USP Japan",
+                    "Structure_Aided_Learning": 4,
+                    "Capstone_Difficulty": 2,
+                    "Daily_Content_Week1": false,
+                    "Courseware_Week1_Satisfaction": 4,
+                    "Daily_Content_Week2": true,
+                    "Courseware_Week2_Satisfaction": 4,
+                    "Any_Comments_Suggestions_Feedback": "Not a lot of particular feedback here since others in my cohort have already raised most of the concerns that I have found. I do feel like the Platform Onboarding Training videos lack context and are quite tiring to watch."
+                },
+                {
+                    "Email Address": "wing.wong@unity3d.com",
+                    "Familiarity_Prior_Text": "I could comfortably resolve a bug in a specific domain",
+                    "Familiarity_Prior_Value": 3,
+                    "Familiarity_After_Text": "I could comfortably resolve a bug in a specific domain",
+                    "Familiarity_After_Value": 3,
+                    "Team": "GxPA",
+                    "Structure_Aided_Learning": 4,
+                    "Capstone_Difficulty": 2,
+                    "Daily_Content_Week1": true,
+                    "Courseware_Week1_Satisfaction": 4,
+                    "Daily_Content_Week2": true,
+                    "Courseware_Week2_Satisfaction": 4,
+                    "Any_Comments_Suggestions_Feedback": "I think having the bug fixing a bit sooner may help with the learning process. My learning style is more \"get in and figure it out after\". I wonder if offering multiple ways to complete the bootcamp to suit different personalities may improve the learning process."
+                },
+                {
+                    "Email Address": "alex.rogovskyi@unity3d.com",
+                    "Familiarity_Prior_Text": "Zero experience",
+                    "Familiarity_Prior_Value": 1,
+                    "Familiarity_After_Text": "I could comfortably mentor and guide a new Unity developer on Unity engine development and contribution",
+                    "Familiarity_After_Value": 4,
+                    "Team": "PS West",
+                    "Structure_Aided_Learning": 5,
+                    "Capstone_Difficulty": 2,
+                    "Daily_Content_Week1": true,
+                    "Courseware_Week1_Satisfaction": 4,
+                    "Daily_Content_Week2": true,
+                    "Courseware_Week2_Satisfaction": 4,
+                    "Any_Comments_Suggestions_Feedback": "I would suggest selecting a bug for a final project day 1 or day 2. It allows to progress through the course while also doing actual work to contribute to the engine. The course covers a lot of topics and not all of them will be used to complete Capstone Project. So it would be more engaging to read new material while also trying to make a contribution to the engine. And then read about other stuff that was not used during the contribution after the final project work is done. Week 1 feels starts a bit slow. I would combine cloning repo and understanding Bee system into one day. I was able to use Rider to debug both C# and C++ code. I would make sure someone who is going through the bootcamp creates a daily meeting with everyone involved. It helps a lot to go through material and then discuss it together (even if it is just only 15 min discussion)."
+                },
+                {
+                    "Email Address": "viviane.kmati@unity3d.com",
+                    "Familiarity_Prior_Text": "Zero experience",
+                    "Familiarity_Prior_Value": 1,
+                    "Familiarity_After_Text": "I could comfortably mentor and guide a new Unity developer on Unity engine development and contribution",
+                    "Familiarity_After_Value": 4,
+                    "Team": "PS West",
+                    "Structure_Aided_Learning": 4,
+                    "Capstone_Difficulty": 2,
+                    "Daily_Content_Week1": false,
+                    "Courseware_Week1_Satisfaction": 3,
+                    "Daily_Content_Week2": true,
+                    "Courseware_Week2_Satisfaction": 3,
+                    "Any_Comments_Suggestions_Feedback": "1. The course would be better if we started working on real bugs earlier (around Day 3 or 4), right after setting up and building the editor. Fixing bugs sooner would help us understand the material better. 2. It would help if the learning materials were given as we need them during each task, instead of reading everything before doing any hands-on work. 3. Some important parts of the internal documentation are missing or unclear, which made setup and development harder. 4. Most of the Jira bugs provided for practice were already fixed, so it was hard to find ones to work on."
+                },
+                {
+                    "Email Address": "chris.castelo@unity3d.com",
+                    "Familiarity_Prior_Text": "I know the basics. Cloning repo, building from source, and enabling platforms.",
+                    "Familiarity_Prior_Value": 2,
+                    "Familiarity_After_Text": "I could comfortably mentor and guide a new Unity developer on Unity engine development and contribution",
+                    "Familiarity_After_Value": 4,
+                    "Team": "Full-Game Development",
+                    "Structure_Aided_Learning": 2,
+                    "Capstone_Difficulty": 2,
+                    "Daily_Content_Week1": true,
+                    "Courseware_Week1_Satisfaction": 2,
+                    "Daily_Content_Week2": true,
+                    "Courseware_Week2_Satisfaction": 2,
+                    "Any_Comments_Suggestions_Feedback": "The material provided in this bootcamp offered enough information to understand how to do the initial setup, implement a fix on the engine side and submit a PR. However, the content was too scattered and lacked a clear, structured flow. Many links diverted from the main objective, making it harder to stay focused. I recommend moving the content related to Bee and TestInfrastructure to an optional section at the end of the course. These topics, while useful, are not essential early on and can be overwhelming when introduced upfront. Additionally, bug selection should be emphasized during the first week. Leaving this step until the second week can easily lead to time management issues. Fixing a bug, setting up the PR, going through the review process, and completing all necessary tests are time-consuming tasks, and delays here are common. In my view, the PR section is the weakest part of the bootcamp. We should consider incorporating the recommendations listed in the appendix and expanding the supporting documentation. There are several nuanced steps—especially related to running specific test commands—that are not clearly explained. These are only briefly mentioned in some of the Day 12 videos, which is not ideal, considering the bootcamp is designed to be 10 days long. To improve the experience, we should restructure the later-day content to ensure everything fits within the intended timeline and flows more logically."
+                },
+                {
+                    "Email Address": "jed.lang@unity3d.com",
+                    "Familiarity_Prior_Text": "I know the basics. Cloning repo, building from source, and enabling platforms.",
+                    "Familiarity_Prior_Value": 2,
+                    "Familiarity_After_Text": "I could comfortably mentor and guide a new Unity developer on Unity engine development and contribution",
+                    "Familiarity_After_Value": 4,
+                    "Team": "PS West",
+                    "Structure_Aided_Learning": 3,
+                    "Capstone_Difficulty": 3,
+                    "Daily_Content_Week1": false,
+                    "Courseware_Week1_Satisfaction": 3,
+                    "Daily_Content_Week2": false,
+                    "Courseware_Week2_Satisfaction": 3,
+                    "Any_Comments_Suggestions_Feedback": "Most of my feedback is in slack RE: the organization of the learning materials and documentation gaps. There were definitely areas where we needed to do non-trivial research in order to properly understand a subject, or achieve a goal. There's definitely room for some areas of courseware to be moved to an \"optional/advanced\" area, as they're good to know, but not going to be needed in 99% of cases."
+                },
+                {
+                    "Email Address": "edward.lee@unity3d.com",
+                    "Familiarity_Prior_Text": "Zero experience",
+                    "Familiarity_Prior_Value": 1,
+                    "Familiarity_After_Text": "I know the basics. Cloning repo, building from source, and enabling platforms.",
+                    "Familiarity_After_Value": 2,
+                    "Team": "GxPA",
+                    "Structure_Aided_Learning": 4,
+                    "Capstone_Difficulty": 3,
+                    "Daily_Content_Week1": true,
+                    "Courseware_Week1_Satisfaction": 4,
+                    "Daily_Content_Week2": true,
+                    "Courseware_Week2_Satisfaction": 4,
+                    "Any_Comments_Suggestions_Feedback": null
+                },
+                {
+                    "Email Address": "spencer.cheng@unity3d.com",
+                    "Familiarity_Prior_Text": "Zero experience",
+                    "Familiarity_Prior_Value": 1,
+                    "Familiarity_After_Text": "I could comfortably resolve a bug in a specific domain",
+                    "Familiarity_After_Value": 3,
+                    "Team": "Singapore",
+                    "Structure_Aided_Learning": 4,
+                    "Capstone_Difficulty": 3,
+                    "Daily_Content_Week1": true,
+                    "Courseware_Week1_Satisfaction": 4,
+                    "Daily_Content_Week2": true,
+                    "Courseware_Week2_Satisfaction": 4,
+                    "Any_Comments_Suggestions_Feedback": "1. The Capstone Project list should be updated, remove not applicable ones, add more applicable bugs 2. Once the bug ticket is chosen, assign it to yourself especially for newly created bug ticket to avoid duplicate effort. Contact the corresponding team for relevant information, for example, what kind of test to be run, investigation discussion, peer review etc."
+                }
+            ];
+
+            // Map text familiarity levels to numeric values for consistent processing
+            const familiarityMap = {
+                "Zero experience": 1,
+                "I know the basics. Cloning repo, building from source, and enabling platforms.": 2,
+                "I could comfortably resolve a bug in a specific domain": 3,
+                "I could comfortably mentor and guide a new Unity developer on Unity engine development and contribution": 4
+            };
+
+            // Calculate Overall Familiarity and Knowledge Gain
+            let totalFamiliarityPrior = 0;
+            let totalFamiliarityAfter = 0;
+            const knowledgeGains = [];
+            const familiarityPriorCounts = {};
+            const familiarityAfterCounts = {};
+            const knowledgeGainCounts = {};
+
+            data.forEach(entry => {
+                const priorValue = entry.Familiarity_Prior_Value;
+                const afterValue = entry.Familiarity_After_Value;
+                const gain = afterValue - priorValue;
+
+                totalFamiliarityPrior += priorValue;
+                totalFamiliarityAfter += afterValue;
+                knowledgeGains.push(gain);
+
+                familiarityPriorCounts[priorValue] = (familiarityPriorCounts[priorValue] || 0) + 1;
+                familiarityAfterCounts[afterValue] = (familiarityAfterCounts[afterValue] || 0) + 1;
+                knowledgeGainCounts[gain] = (knowledgeGainCounts[gain] || 0) + 1;
+            });
+
+            const avgFamiliarityPrior = totalFamiliarityPrior / data.length;
+            const avgFamiliarityAfter = totalFamiliarityAfter / data.length;
+            const avgKnowledgeGain = avgFamiliarityAfter - avgFamiliarityPrior;
+
+            document.getElementById('avg-familiarity-prior').textContent = avgFamiliarityPrior.toFixed(2);
+            document.getElementById('avg-familiarity-after').textContent = avgFamiliarityAfter.toFixed(2);
+            document.getElementById('avg-knowledge-gain').textContent = avgKnowledgeGain.toFixed(2);
+
+            // Chart 1: Overall Familiarity Before and After
+            const ctxFamiliarity = document.getElementById('familiarityChart').getContext('2d');
+            new Chart(ctxFamiliarity, {
+                type: 'bar',
+                data: {
+                    labels: ['Prior to Course', 'After Course Completion'],
+                    datasets: [{
+                        label: 'Average Familiarity Level (1-4 Scale)',
+                        data: [avgFamiliarityPrior, avgFamiliarityAfter],
+                        backgroundColor: ['#60a5fa', '#3b82f6'],
+                        borderColor: ['#3b82f6', '#2563eb'],
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4, // Max familiarity level
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    if (value === 1) return 'Zero experience';
+                                    if (value === 2) return 'Know basics';
+                                    if (value === 3) return 'Resolve bug';
+                                    if (value === 4) return 'Mentor/Guide';
+                                    return value;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Overall Average Familiarity with Unity Engine Development',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Overall Knowledge Gain Distribution
+            const ctxKnowledgeGain = document.getElementById('knowledgeGainDistributionChart').getContext('2d');
+            const knowledgeGainLabels = Object.keys(knowledgeGainCounts).sort((a, b) => a - b);
+            const knowledgeGainData = knowledgeGainLabels.map(label => knowledgeGainCounts[label]);
+
+            new Chart(ctxKnowledgeGain, {
+                type: 'bar',
+                data: {
+                    labels: knowledgeGainLabels.map(g => `${g} Level${g == 1 ? '' : 's'} Gain`),
+                    datasets: [{
+                        label: 'Number of Participants',
+                        data: knowledgeGainData,
+                        backgroundColor: '#10b981',
+                        borderColor: '#059669',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0 // Ensure integer ticks for counts
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Knowledge Gain (Levels)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Overall Distribution of Knowledge Gain',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Calculate Overall Averages for Satisfaction Metrics
+            let totalStructureAidedLearning = 0;
+            let totalCapstoneDifficulty = 0; // Lower is better for difficulty
+            let totalCoursewareWeek1Satisfaction = 0;
+            let totalCoursewareWeek2Satisfaction = 0;
+
+            data.forEach(entry => {
+                totalStructureAidedLearning += entry.Structure_Aided_Learning;
+                totalCapstoneDifficulty += entry.Capstone_Difficulty;
+                totalCoursewareWeek1Satisfaction += entry.Courseware_Week1_Satisfaction;
+                totalCoursewareWeek2Satisfaction += entry.Courseware_Week2_Satisfaction;
+            });
+
+            const avgStructureAidedLearning = totalStructureAidedLearning / data.length;
+            const avgCapstoneDifficulty = totalCapstoneDifficulty / data.length; // Lower is better
+            const avgCoursewareWeek1Satisfaction = totalCoursewareWeek1Satisfaction / data.length;
+            const avgCoursewareWeek2Satisfaction = totalCoursewareWeek2Satisfaction / data.length;
+
+            const satisfactionLabels = [
+                'Structure Aided Learning (1-5)',
+                'Capstone Project Difficulty (1-5, Lower is Better)',
+                'Courseware Week 1 Satisfaction (1-5)',
+                'Courseware Week 2 Satisfaction (1-5)'
+            ];
+            const satisfactionData = [
+                avgStructureAidedLearning,
+                avgCapstoneDifficulty,
+                avgCoursewareWeek1Satisfaction,
+                avgCoursewareWeek2Satisfaction
+            ];
+            const satisfactionColors = [
+                '#fcd34d', // yellow
+                '#ef4444', // red (for difficulty, indicating lower is better)
+                '#34d399', // green
+                '#22c55e'  // darker green
+            ];
+
+            // Chart 3: Overall Satisfaction Metrics
+            const ctxSatisfaction = document.getElementById('satisfactionChart').getContext('2d');
+            new Chart(ctxSatisfaction, {
+                type: 'bar',
+                data: {
+                    labels: satisfactionLabels,
+                    datasets: [{
+                        label: 'Average Rating',
+                        data: satisfactionData,
+                        backgroundColor: satisfactionColors,
+                        borderColor: satisfactionColors.map(color => color.replace('400', '600')), // Darken border
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Overall Average Ratings for Bootcamp Aspects',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // --- Breakdown by Team/Region ---
+            const teamData = {}; // Stores aggregated data per team
+
+            data.forEach(entry => {
+                const team = entry.Team || 'Unknown'; // Handle potential missing team data
+                if (!teamData[team]) {
+                    teamData[team] = {
+                        count: 0,
+                        totalFamiliarityPrior: 0,
+                        totalFamiliarityAfter: 0,
+                        totalStructureAidedLearning: 0,
+                        totalCapstoneDifficulty: 0,
+                        totalCoursewareWeek1Satisfaction: 0,
+                        totalCoursewareWeek2Satisfaction: 0
+                    };
+                }
+
+                teamData[team].count++;
+                teamData[team].totalFamiliarityPrior += entry.Familiarity_Prior_Value;
+                teamData[team].totalFamiliarityAfter += entry.Familiarity_After_Value;
+                teamData[team].totalStructureAidedLearning += entry.Structure_Aided_Learning;
+                teamData[team].totalCapstoneDifficulty += entry.Capstone_Difficulty;
+                teamData[team].totalCoursewareWeek1Satisfaction += entry.Courseware_Week1_Satisfaction;
+                teamData[team].totalCoursewareWeek2Satisfaction += entry.Courseware_Week2_Satisfaction;
+            });
+
+            const teamBreakdownTableBody = document.getElementById('team-breakdown-table');
+            const teamNames = Object.keys(teamData).sort();
+
+            const teamKnowledgeGainLabels = [];
+            const teamKnowledgeGainData = [];
+            const teamSatisfactionLabels = [];
+            const teamSatisfactionDataStructure = [];
+            const teamSatisfactionDataCapstone = [];
+            const teamSatisfactionDataWeek1 = [];
+            const teamSatisfactionDataWeek2 = [];
+
+            teamNames.forEach(team => {
+                const teamEntry = teamData[team];
+                const avgPrior = teamEntry.totalFamiliarityPrior / teamEntry.count;
+                const avgAfter = teamEntry.totalFamiliarityAfter / teamEntry.count;
+                const avgGain = avgAfter - avgPrior;
+                const avgStructure = teamEntry.totalStructureAidedLearning / teamEntry.count;
+                const avgCapstone = teamEntry.totalCapstoneDifficulty / teamEntry.count;
+                const avgWeek1Sat = teamEntry.totalCoursewareWeek1Satisfaction / teamEntry.count;
+                const avgWeek2Sat = teamEntry.totalCoursewareWeek2Satisfaction / teamEntry.count;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-2 px-4">${team}</td>
+                    <td class="py-2 px-4">${teamEntry.count}</td>
+                    <td class="py-2 px-4">${avgPrior.toFixed(2)}</td>
+                    <td class="py-2 px-4">${avgAfter.toFixed(2)}</td>
+                    <td class="py-2 px-4">${avgGain.toFixed(2)}</td>
+                    <td class="py-2 px-4">${avgStructure.toFixed(2)}</td>
+                    <td class="py-2 px-4">${avgCapstone.toFixed(2)}</td>
+                    <td class="py-2 px-4">${avgWeek1Sat.toFixed(2)}</td>
+                    <td class="py-2 px-4">${avgWeek2Sat.toFixed(2)}</td>
+                `;
+                teamBreakdownTableBody.appendChild(row);
+
+                // For charts
+                teamKnowledgeGainLabels.push(team);
+                teamKnowledgeGainData.push(avgGain);
+
+                teamSatisfactionLabels.push(team);
+                teamSatisfactionDataStructure.push(avgStructure);
+                teamSatisfactionDataCapstone.push(avgCapstone);
+                teamSatisfactionDataWeek1.push(avgWeek1Sat);
+                teamSatisfactionDataWeek2.push(avgWeek2Sat);
+            });
+
+            // Chart 4: Knowledge Gain by Team/Region
+            const ctxKnowledgeGainByTeam = document.getElementById('knowledgeGainByTeamChart').getContext('2d');
+            new Chart(ctxKnowledgeGainByTeam, {
+                type: 'bar',
+                data: {
+                    labels: teamKnowledgeGainLabels,
+                    datasets: [{
+                        label: 'Average Knowledge Gain (Levels)',
+                        data: teamKnowledgeGainData,
+                        backgroundColor: '#6366f1',
+                        borderColor: '#4338ca',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4, // Max possible gain
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Average Knowledge Gain by USP Team/Region',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Chart 5: Satisfaction by Team/Region (Grouped Bar Chart)
+            const ctxSatisfactionByTeam = document.getElementById('satisfactionByTeamChart').getContext('2d');
+            new Chart(ctxSatisfactionByTeam, {
+                type: 'bar',
+                data: {
+                    labels: teamSatisfactionLabels,
+                    datasets: [
+                        {
+                            label: 'Structure Aided Learning',
+                            data: teamSatisfactionDataStructure,
+                            backgroundColor: '#fcd34d',
+                            borderColor: '#fbbf24',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Capstone Difficulty (Lower is Better)',
+                            data: teamSatisfactionDataCapstone,
+                            backgroundColor: '#ef4444',
+                            borderColor: '#dc2626',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Courseware Week 1 Satisfaction',
+                            data: teamSatisfactionDataWeek1,
+                            backgroundColor: '#34d399',
+                            borderColor: '#10b981',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Courseware Week 2 Satisfaction',
+                            data: teamSatisfactionDataWeek2,
+                            backgroundColor: '#22c55e',
+                            borderColor: '#16a34a',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: false,
+                            title: {
+                                display: true,
+                                text: 'Team/Region'
+                            }
+                        },
+                        y: {
+                            stacked: false,
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1
+                            },
+                            title: {
+                                display: true,
+                                text: 'Average Rating (1-5)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Average Satisfaction Metrics by USP Team/Region',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
